@@ -42,21 +42,21 @@ for f in "$DIR"/*; do
             cat $ANDROID_PATH/build.gradle
 
             # Build and publish
-            # "$ANDROID_PATH"/gradlew clean build publishAllPublicationsToGithubPackagesRepository -b "$ANDROID_PATH"/build.gradle -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true > "$LOG_OUTPUT" 2>&1
+            "$ANDROID_PATH"/gradlew clean build publishAllPublicationsToGithubPackagesRepository -b "$ANDROID_PATH"/build.gradle -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true > "$LOG_OUTPUT" 2>&1
 
-            # if grep --quiet "Conflict" "$LOG_OUTPUT"; then
-            #     printf %"s\n\n" "Duplicate: a published plugin $PLUGIN_NAME exists for version $PLUGIN_VERSION, skipping."
-            # else
-            #     if grep --quiet "BUILD SUCCESSFUL" "$LOG_OUTPUT"; then
-            #         printf %"s\n\n" "Success: $PLUGIN_NAME version $PLUGIN_VERSION published."
-            #     else
-            #         printf %"s\n\n" "Error publishing $PLUGIN_NAME, check $LOG_OUTPUT for more info!"
-            #         cat $LOG_OUTPUT
-            #         exit 1
-            #     fi
-            # fi
+            if grep --quiet "Conflict" "$LOG_OUTPUT"; then
+                printf %"s\n\n" "Duplicate: a published plugin $PLUGIN_NAME exists for version $PLUGIN_VERSION, skipping."
+            else
+                if grep --quiet "BUILD SUCCESSFUL" "$LOG_OUTPUT"; then
+                    printf %"s\n\n" "Success: $PLUGIN_NAME version $PLUGIN_VERSION published."
+                else
+                    printf %"s\n\n" "Error publishing $PLUGIN_NAME, check $LOG_OUTPUT for more info!"
+                    cat $LOG_OUTPUT
+                    exit 1
+                fi
+            fi
         else
-            printf %"s\n\n" "$PLUGIN_NAME has no package.json file or Android package, skipping..."
+            printf %"s\n\n" "$f has no package.json file or Android package, skipping..."
         fi
     fi
 done
